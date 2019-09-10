@@ -1,0 +1,155 @@
+#include "pch.h"
+#include <ctime>
+#include <iostream>
+using namespace std;
+int n;
+double *Answr;
+double MaxDiff=-100;
+int k = 0;
+
+void privedenie(double **arr) {
+	double *p = new double;
+	double max;
+	/*p = arr[0];
+	arr[0] = arr[1];
+	arr[1] = p;*/
+
+	for (int j = 0; j < n; j++) {
+		max = arr[j][j];
+		for (int i = 0; i < n; i++)
+			if (arr[i][j] > max) {
+				max = arr[i][j];
+				p = arr[j];
+				arr[j] = arr[i];
+				arr[i] = p;
+			}
+	}
+
+
+
+	int k = 0;
+	for (int j = 0; j < n; j++) {
+		for (int i = 0; i < n; i++) {
+			if (arr[j][j] < arr[i][j]) k++;
+		}
+	}
+	if (k > 1) cout << "\nFalse\n";
+	else cout << "\nTrue\n";
+}
+
+void Fun(double **arr) {
+	double *NewMass = new double[n];
+	double sum = 0;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++)
+			if (i != j)
+				sum += arr[i][j] * Answr[j];
+		                                                                          //cout << "x" << i + 1 << "=" << (arr[i][n] - sum) / arr[i][i] << endl;
+		if (fabs(Answr[i] - (arr[i][n] - sum) / arr[i][i]) > MaxDiff)
+			MaxDiff = fabs(Answr[i] - (arr[i][n] - sum) / arr[i][i]);
+		cout << "\n" << (arr[i][n] - sum) / arr[i][i] << "";
+		NewMass[i] = (arr[i][n] - sum) / arr[i][i];
+		sum = 0;
+	}
+	for (int i = 0; i < n; i++) 
+		Answr[i] = NewMass[i];
+
+	delete[] NewMass;
+	cout << "\n\n\n" << k << ": " << MaxDiff << "\n\n\n\n";
+}
+
+void fun(double **arr) {
+	double sum = 0;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++)
+			if (i != j)
+				sum += arr[i][j] * Answr[j];
+		                                                                        //cout << "x" << i + 1 << "=" << (arr[i][n] - sum) / arr[i][i] << endl;
+		if (fabs(Answr[i] - (arr[i][n] - sum) / arr[i][i]) > MaxDiff)
+			MaxDiff = fabs(Answr[i] - (arr[i][n] - sum) / arr[i][i]);
+		cout << "\n" <<  (arr[i][n] - sum) / arr[i][i] << "";
+		Answr[i] = (arr[i][n] - sum) / arr[i][i];
+		sum = 0;
+	}
+	cout << "\n\n\n"<<k<<": " << MaxDiff << "\n\n\n\n";
+}
+
+void showAnswr(double *mass,double **arr) {
+	cout << "Chislo iterazii: " << k - 1 << "\n\n";
+
+
+
+	for (int i = 0; i < n; i++)
+		cout <<"x"<<i+1<<" = "<< mass[i] << endl;
+	cout << endl;
+
+
+
+
+	int k = 0;
+	for (int j = 0; j < n; j++) {
+		for (int i = 0; i < n; i++) {
+			if (arr[j][j] < arr[i][j]) k++;
+		}
+	}
+	if (k > 1) cout << "\nFalse\n";
+	else cout << "\nTrue\n";
+
+
+
+
+
+	double sum;
+	for (int i = 0; i < n; i++) {
+		sum = 0;
+		for (int j = 0; j < n; j++) {
+			sum += arr[i][j] * mass[j];
+		}
+		cout << sum << endl;
+	}
+}
+
+void ShowArr(double **arr) {
+	cout << "\n\n";
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n + 1; j++)
+			cout << arr[i][j] << " ";
+		cout << endl;
+	}
+	cout << "\n";
+}
+
+double **create() {
+	double **arr = new double*[n];
+	for (int i = 0; i < n; i++)
+		arr[i] = new double[n + 1];
+	for (int i = 0; i < n; i++)
+		for (int j = 0; j < n + 1; j++)
+			//cin >> arr[i][j];
+			arr[i][j] = rand() % 14 + 1;
+	return arr;
+}
+
+int main()
+{
+	//srand(time(0));
+	srand(14);           //9,10
+	cin >> n;
+	Answr = new double[n];
+	for (int i = 0; i < n; i++)
+		Answr[i] = 0;                                // Массив ответов
+	double **arr=create();                         // Создание матрицы
+	ShowArr(arr);
+	privedenie(arr);                                    // Приводим матрицу к виду "Преобладание главной диагонали"
+	ShowArr(arr);
+	const double e = 0.00001;
+	while(fabs(MaxDiff)>e) {
+		k++;
+		if (k > 30) break;
+		MaxDiff = -100;
+		fun(arr);
+	}
+	showAnswr(Answr,arr);
+	ShowArr(arr);
+	return 0;
+}
